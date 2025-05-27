@@ -4,6 +4,7 @@ import numpy as np
 import os
 import matplotlib.pyplot as plt
 import re
+import torch.nn.functional as F
 
 
 def seed_torch(seed=1111):
@@ -128,3 +129,41 @@ def plot_val_from_logfile(log_file_path, output_dir, title_prefix="Validation"):
     plt.tight_layout()
     plt.savefig(os.path.join(output_dir, f"{title_prefix.lower()}_progress.png"))
     plt.close()
+
+def compute_centroids(features, labels, num_classes):
+    """
+    features: (B, D) tensor di embeddings
+    labels: (B,) tensor di label int
+    num_classes: int
+    
+    ritorna: (num_classes, D) centroidi calcolati come media embeddings per classe
+    """
+    device = features.device
+    D = features.size(1)
+    centroids = torch.zeros(num_classes, D).to(device)
+    for c in range(num_classes):
+        mask = (labels == c)
+        if mask.sum() == 0:
+            # se classe non presente nel batch, centroids rimane zero o può essere randomizzato
+            continue
+        class_feats = features[mask]
+        centroids[c] = class_feats.mean(dim=0)
+    return centroids
+
+def compute_soft_labels(features, centroids):
+    """
+    features: (B, D)
+    centroids: (num_classes, D)
+    
+    ritorna: (B, num_classes) soft labels basate su similarità coseno
+    """
+    # normalizziamo
+    features_norm = F.normalize(features, dim=1)
+    centroids_norm = F.normalize(centroids, dim=1)
+    
+    # similarità coseno (B, num_classes)
+    sim = torch.matmul(features_norm, centroids_norm.T)
+    
+    # softmax per trasformare in distribuzioni probabilistiche
+    soft_labels = F.softmax(sim, dim=1)
+    return soft_labels
