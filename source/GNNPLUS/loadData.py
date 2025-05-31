@@ -159,7 +159,7 @@ def load_from_gz(gz_file_path):
 
 def load_dataset(train_path=None, val_split_ratio=0.2, dataset_name="dataset"):
 
-    print(f"Dataset: {dataset_name} --")
+    print(f"Dataset: {dataset_name}")
 
     dataset_splits = {'train': [], 'val': []}
     
