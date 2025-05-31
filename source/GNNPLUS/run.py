@@ -57,14 +57,6 @@ def run(args):
     elif checkpoint_path:
         test_dataset = GraphDataset(args.test_path, transform=add_zeros)
         test_loader = DataLoader(test_dataset, batch_size=32, shuffle=False)
-        model.load_state_dict(torch.load(checkpoint_path,  map_location=torch.device('cpu')))
+        model.load_state_dict(torch.load(checkpoint_path))
         predictions = evaluate(test_loader, model, device, calculate_accuracy=False)
         save_predictions(predictions, args.test_path)
-
-#if __name__ == "__main__":
-#    parser = argparse.ArgumentParser(description="Train and evaluate GNN models on graph datasets.")
-#    parser.add_argument("--train_path", type=str, help="Path to the training dataset (optional).")
-#    parser.add_argument("--test_path", type=str, required=True, help="Path to the test dataset.")
-#    
-#    args = parser.parse_args()
-#    main(args)
