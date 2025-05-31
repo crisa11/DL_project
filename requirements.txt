@@ -1,0 +1,8 @@
+# Requires Python >= 3.10
+matplotlib==3.10.3
+numpy==2.2.6
+pandas==2.2.3
+scikit_learn==1.6.1
+torch==2.7.0
+torch_geometric==2.6.1
+tqdm==4.66.2
